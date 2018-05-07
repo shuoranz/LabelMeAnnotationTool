@@ -286,9 +286,17 @@ function InitializeAnnotationTools(tag_button, tag_canvas){
         <button id="erase" class="labelBtnDraw" type="button" title="Delete last segment" onclick="main_handler.EraseSegment()" > \
         <img src="Icons/erase.png"  width="28" height="38" /> \
         </button> ';
-        if (bbox_mode) html_str += ' <button id="bounding_box" class="labelBtnDraw" type="button" title="Start bounding box" onclick="SetPolygonDrawingMode(true)" > \
+        if (bbox_mode) html_str += ' <button id="bounding_box" class="labelBtnDraw" type="button" title="Start bounding box" onclick="square_box = false;ellipse_box = false;SetPolygonDrawingMode(true)" > \
         <img src="Icons/bounding.png"  width="28" height="38" /> \
         </button> ';
+        if (bbox_mode) html_str += ' <button id="square_box" class="labelBtnDraw" type="button" title="Start square box" onclick="square_box = true; ellipse_box = false; SetPolygonDrawingMode(true, false)" > \
+        <img src="Icons/square.png"  width="28" height="28" /> \
+        </button> ';
+
+        html_str += ' <button id="ellipse_box" class="labelBtnDraw" type="button" title="Start ellipse" onclick="ellipse_box = true; square_box = bounding_box=false; SetPolygonDrawingMode(true, true)" > \
+        <img src="Icons/ellipse.png"  width="28" height="38" /> \
+        </button> ';
+
     html_str += '</div>';
 
     if (!video_mode){
@@ -358,7 +366,7 @@ function SetDrawingMode(mode){
     drawing_mode = mode;
 }
 
-function SetPolygonDrawingMode(bounding){
+function SetPolygonDrawingMode(bounding, ellipse){
   if (active_canvas == QUERY_CANVAS) return;
   if(draw_anno) {
       alert("Need to close current polygon first.");
@@ -367,7 +375,9 @@ function SetPolygonDrawingMode(bounding){
   var buttons = document.getElementsByClassName("labelBtnDraw");
   for (var i = 0; i < buttons.length; i++) buttons[i].setAttribute('style', 'background-color: #fff');
   if (!bounding) document.getElementById("polygon").setAttribute('style', 'background-color: #faa');
-  else document.getElementById("bounding_box").setAttribute('style', 'background-color: #faa');
+  else if (bounding && ellipse === undefined) document.getElementById("bounding_box").setAttribute('style', 'background-color: #faa');
+  else if (bounding && ellipse ===false) document.getElementById("square_box").setAttribute('style', 'background-color: #faa');
+  else if (bounding && ellipse) document.getElementById("ellipse_box").setAttribute('style', 'background-color: #faa');
   bounding_box = bounding;
   SetDrawingMode(0);
 }

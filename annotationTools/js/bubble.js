@@ -228,8 +228,9 @@ function GetPopupFormDraw(scribble_form) {
   // Add parts/Stop adding parts
   if (add_parts_to == null) html_str += '<input type="button" value="Add parts" title="Press this button if you want to start adding parts" onclick="main_handler.StartAddParts();" tabindex="0" />';
   else html_str += '<input type="button" value="Stop parts" title="Press this button if you want to stop adding parts" onclick="main_handler.StopAddParts();" tabindex="0" />';
-    
-  return html_str;
+
+  html_str += '<div id="relation_fields"></div><input type="button" value="Add Relationship" title="Press this button if you want to start add relation object" onclick="addRelationField();" tabindex="0" />';
+    return html_str;
 }
 
 function GetPopupFormEdit(anno) {
@@ -280,8 +281,31 @@ function GetPopupFormEdit(anno) {
   
   // Add parts/Stop adding parts
   if (add_parts_to == null) html_str += '<input type="button" value="Add parts" title="Press this button if you want to start adding parts" onclick="main_handler.StartAddParts();" tabindex="0" />';
-  
+  html_str += '<div id="relation_fields"></div><input type="button" value="Add Relationship" title="Press this button if you want to start add relation object" onclick="addRelationField('+anno.anno_id+');" tabindex="0" />';
   return html_str;
+}
+
+function addRelationField(aid){
+    var Npolygons = LMnumberOfObjects(LM_xml);
+    var relationInnerHtml = "";
+    relationInnerHtml += '<li>This Object is <input style="width:140px;" type="text"/> of <select name="relation_Obj">\n';
+    if(aid){
+      //edit
+        for(var i=0; i < Npolygons; i++) {
+            var counter = i+1;
+            if(i != aid) {
+                relationInnerHtml += '  <option value="'+i+'">Obj' + counter + '</option>\n';
+            }
+        }
+    } else {
+      //draw new
+        for(var i=0; i < Npolygons; i++) {
+            var counter = i+1;
+            relationInnerHtml += '  <option value="'+i+'">Obj'+ counter +'</option>\n';
+        }
+    }
+    relationInnerHtml += "</select></li>";
+    $("#relation_fields").append(relationInnerHtml);
 }
 
 // ****************************

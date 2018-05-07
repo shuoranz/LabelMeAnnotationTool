@@ -52,6 +52,8 @@ var scribble_mode = true;
 var threed_mode = false;
 var video_mode = false;
 var bounding_box = false;
+var square_box = false;
+var ellipse_box = false;
 var bbox_mode = true;
 var autocomplete_mode = false;
 
@@ -88,3 +90,4 @@ var mt_N = 'inf';
 var object_choices = '...';
 
 var loaded_once = false;
+var relationXML = '';

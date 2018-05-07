@@ -74,10 +74,28 @@ function DrawCanvasMouseMove(event){
   var xb = GetEventPosX(event);
   var yb = GetEventPosY(event);
   console.log(xb,yb);
+
   var scale = main_media.GetImRatio();
-  var xarr = [draw_x[0], Math.round(xb/scale), Math.round(xb/scale), draw_x[0], draw_x[0]];
-  var yarr = [draw_y[0],draw_y[0], Math.round(yb/scale), Math.round(yb/scale), draw_y[0]];
-  draw_anno.DrawPolyLine(xarr, yarr);
+
+  var xarr, yarr;
+  var xstep = Math.round(xb/scale) - draw_x[0];
+  var ystep = Math.round(yb/scale) - draw_y[0];
+  var step = Math.min(xstep, ystep);
+  
+  if (square_box === true) {
+    xarr = [draw_x[0], draw_x[0]+step, draw_x[0]+step, draw_x[0], draw_x[0]];
+    yarr = [draw_y[0],draw_y[0], draw_y[0]+step, draw_y[0]+step, draw_y[0]];    
+  } else {
+    xarr = [draw_x[0], Math.round(xb/scale), Math.round(xb/scale), draw_x[0], draw_x[0]];
+    yarr = [draw_y[0],draw_y[0], Math.round(yb/scale), Math.round(yb/scale), draw_y[0]];    
+  }
+
+  if (ellipse_box) {
+    draw_anno.DrawEllipse(xarr, yarr);
+  } else {
+    draw_anno.DrawPolyLine(xarr, yarr);  
+  }
+  
 
   /*DrawPolygon(draw_anno.div_attach,xarr, yarr,'drawing_bounding_box','stroke="#0000ff" stroke-width="4" fill-opacity="0.0"',scale);
   DrawPoint(draw_anno.div_attach,draw_x[0],draw_y[0],'r="6" fill="#00ff00" stroke="#ffffff" stroke-width="3"',scale);*/
@@ -101,8 +119,23 @@ function DrawCanvasMouseDown(event) {
   var y = Math.round(GetEventPosY(event)/scale);
 
   // Add point to polygon:
-  
-  if (bounding_box){
+  if (square_box) {
+    var xstep = x - draw_x[0];
+    var ystep = y - draw_y[0];
+    var step = Math.min(xstep, ystep);
+
+    $('#draw_canvas').find("a").remove();
+    draw_x.push(draw_x[0]+step);
+    draw_y.push(draw_y[0]);
+    draw_x.push(draw_x[0]+step);
+    draw_y.push(draw_y[0]+step);
+    draw_x.push(draw_x[0]);
+    draw_y.push(draw_y[0]+step);
+    $('#draw_canvas_div').unbind("mousemove");
+    DrawCanvasClosePolygon();
+    return;
+  }
+  else if (bounding_box){
 
     $('#draw_canvas').find("a").remove();
     draw_x.push(x);

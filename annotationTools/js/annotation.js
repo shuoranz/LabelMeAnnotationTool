@@ -19,6 +19,7 @@ function annotation(anno_id) {
     // mask URL indicates, in case we have a mask, the URL of its image
     this.anno_type = 0;
     this.bounding_box = false;
+    this.ellipse_box = false;
     // Info about the image in case of being a segm annotation
     
     
@@ -65,7 +66,16 @@ function annotation(anno_id) {
         /*************************************************************/
         /*************************************************************/
     };
-    
+
+    this.GetShapeType = function () {
+        /*************************************************************/
+        /*************************************************************/
+        // Scribble: When this.anno_type==1:
+        return $(LM_xml).children("annotation").children("object").eq(this.anno_id).children("type").text();
+        /*************************************************************/
+        /*************************************************************/
+    };    
+
     this.GetAutomatic = function() {
         if($(LM_xml).children("annotation").children("object").eq(this.anno_id).children("automatic").length > 0) {
             return parseInt($(LM_xml).children("annotation").children("object").eq(this.anno_id).children("automatic").text());
@@ -141,6 +151,7 @@ function annotation(anno_id) {
     // Render the annotation (shape + action) given the action_type (e.g. rest).
     this.RenderAnnotation = function (action_type) {
         // Render the shape:
+        console.log(main_media.GetImRatio(), this.GetPtsX(), this.GetPtsY());
         this.DrawPolygon(main_media.GetImRatio(), this.GetPtsX(), this.GetPtsY());
         // Set shape actions:
         switch(action_type) {
@@ -180,7 +191,14 @@ function annotation(anno_id) {
         else {
             // Draw a polygon:
             var attr = 'fill="none" stroke="' + HashObjectColor(obj_name) + '" stroke-width="4"';
-            this.polygon_id = DrawPolygon(this.div_attach,xp,yp,obj_name,attr,im_ratio);
+            console.log(this.GetShapeType());
+            
+            if (this.GetShapeType() === 'ellipse_box') {
+                this.polygon_id = DrawEllipse1(this.div_attach,xp,yp,obj_name,attr,im_ratio);
+            } else {
+                this.polygon_id = DrawPolygon(this.div_attach,xp,yp,obj_name,attr,im_ratio);    
+            }
+            
         }
         return this.polygon_id;
     };
@@ -213,7 +231,36 @@ function annotation(anno_id) {
           $('#'+this.point_id).attr('onmouseover',"$('#'+draw_anno.point_id).attr('r',8,'stroke-width',4);");
           $('#'+this.point_id).attr('onmouseout',"if(draw_anno) {$('#'+draw_anno.point_id).attr('r',6,'stroke-width',3);}");
     };
-    
+
+
+    // Draw a poly-line given this annotation's control points (i.e.
+    // don't connect the last point to the first point).  This function
+    // is used when we zoom, close the "what is this object?" popup bubble, 
+    // or start a new polygon.
+    this.DrawEllipse = function (xp, yp) {
+
+        // Draw line segments:
+        var im_ratio = main_media.GetImRatio();
+        this.line_ids = Array();
+        // Draw line segment:
+        this.line_ids.push(DrawEllipse(this.div_attach, xp[0],yp[0],xp[2],yp[2],'stroke="#0000ff" stroke-width="4"',im_ratio));
+
+        // Set cursor to be crosshair on line segment:
+        $('#'+this.line_ids[0]).css('cursor','crosshair');
+
+          // Draw first point:
+          if(this.point_id) $('#'+this.point_id).remove();
+          this.point_id = DrawPoint(this.div_attach,xp[0],yp[0],'r="6" fill="#00ff00" stroke="#ffffff" stroke-width="3"',im_ratio);
+
+          // Set cursor to be pointer when user hovers over point:
+          $('#'+this.point_id).css('cursor','pointer');
+
+          // Set actions for first point:
+          $('#'+this.point_id).attr('onmousedown','DrawCanvasClosePolygon();');
+          $('#'+this.point_id).attr('onmouseover',"$('#'+draw_anno.point_id).attr('r',8,'stroke-width',4);");
+          $('#'+this.point_id).attr('onmouseout',"if(draw_anno) {$('#'+draw_anno.point_id).attr('r',6,'stroke-width',3);}");
+    };
+        
     // Deletes the annotation's polygon from the screen.
     this.DeletePolygon = function () {
       // Remove drawn polygon:

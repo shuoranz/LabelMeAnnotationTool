@@ -53,6 +53,29 @@ function DrawPolygon(element_id,X,Y,obj_name,attr,scale) {
   return dom_id;
 }
 
+function DrawEllipse1(element_id,X,Y,obj_name,attr,scale) {
+  // Create string of the points ("x1,y1 x2,y2 x3,y3 ..."):
+  // var poly_points = "";
+  // for(var i = 0; i < X.length; i++) poly_points += (scale*X[i]) + "," + (scale*Y[i]) + " ";
+  
+  // Get drawn object DOM element id:
+  var dom_id = element_id + '_obj' + $('#'+element_id).children().length + '_' + Math.floor(Math.random()*100000);
+
+  x1 = Math.floor(scale*X[0]);
+  x2 = Math.floor(scale*X[1]);
+  y1 = Math.floor(scale*Y[0]);
+  y2 = Math.floor(scale*Y[2]);
+  cx = Math.floor((x1+x2)/2);
+  cy = Math.floor((y1+y2)/2);
+  rx = cx-Math.min(x1, x2);
+  ry = cy-Math.min(y1, y2);
+
+  // Draw polygon:
+  $('#'+element_id).append('<a xmlns="http://www.w3.org/2000/svg"> <ellipse xmlns="http://www.w3.org/2000/svg" id="' + dom_id + '" cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" ' + attr + ' /><title xmlns="http://www.w3.org/2000/svg">' + obj_name + '</title></a>');
+  
+  return dom_id;
+}
+
 // Draw a flag given a point (X,Y).  Returns DOM element id of drawn flag.
 //   element_id - String containing DOM element id to attach to.
 //   X - Scalar with X coordinate.
@@ -107,6 +130,26 @@ function DrawLineSegment(element_id,x1,y1,x2,y2,attr,scale) {
   return dom_id;
 }
   
+// Draw a line segment given starting coordinates and ending coordinates.
+function DrawEllipse(element_id,x1,y1,x2,y2,attr,scale) {
+  // Get drawn object DOM element id:
+  var dom_id = element_id + '_ellipse' + $('#'+element_id).children().length;
+
+  x1 = Math.floor(scale*x1);
+  x2 = Math.floor(scale*x2);
+  y1 = Math.floor(scale*y1);
+  y2 = Math.floor(scale*y2);
+  cx = Math.floor((x1+x2)/2);
+  cy = Math.floor((y1+y2)/2);
+  rx = cx-Math.min(x1, x2);
+  ry = cy-Math.min(y1, y2);
+
+  console.log(x1, x2, y1, y2, cx, cy, rx, ry, attr);
+  $('#'+element_id).append('<ellipse xmlns="http://www.w3.org/2000/svg" fill-opacity="0.5" id="' + dom_id + '" cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" ' + attr + ' />');
+
+  return dom_id;
+}
+
 // Draw a point.
 function DrawPoint(element_id,x,y,attr,scale) {
   // Get drawn object DOM element id:

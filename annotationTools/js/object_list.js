@@ -131,8 +131,41 @@ function RenderObjectList() {
     }
   }
   
-  html_str += '</ol><p><br/></p></div>';
-  
+  html_str += '</ol>';
+
+
+  html_str += '<br/><br/><b>Object Relation</b><ol>';
+
+  for(var i=0; i < Npolygons; i++) {
+      var counter = i+1;
+      var obj_name = LMgetObjectField(LM_xml,i,'name')
+      var attributes = LMgetObjectField(LM_xml,i,'attributes');
+      html_str += '<li>Obj'+ counter + ": " + obj_name;
+      if(attributes!=""){
+          html_str += '('+attributes+')</li>';
+      }
+      else{
+          html_str += '</li>';
+      }
+      var relations = LMgetObjectField(LM_xml,i,'relations');
+      if(relations != ""){
+        console.log(relations);
+        var tmpArray;
+        var tmpText;
+        tmpArray = relations.split("#!#");
+        for(var j=0; j < tmpArray.length;j++){
+          if(tmpArray[j]!=""){
+              tmpText = tmpArray[j].split("#&#");
+              var ttt = tmpText[1].replace('<detail xmlns="http://www.w3.org/1999/xhtml">','');
+              html_str += '<li class="children_tree">is '+ttt+' (of) obj' + tmpText[0] +'</li>';
+          }
+        }
+      }
+  }
+  html_str += '</ol>';
+
+  html_str += '<p><br/></p></div>';
+  //console.log(html_str);
   // Attach annotation list to 'anno_anchor' DIV element:
   $('#anno_anchor').append(html_str);
   $('#Link'+add_parts_to).css('font-weight',700); //

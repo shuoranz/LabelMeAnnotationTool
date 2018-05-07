@@ -40,6 +40,20 @@ function LMgetObjectField(xml,ind_object, name, frame) {
         }
         return parts;
     }
+    if (name == 'relations'){
+		relations = "";
+		for(var j = 0; j < obj.children("relation").length; j++){
+            tmp1 = obj.children("relation").children("hasrelation").text();
+
+            tmp2 = obj.children("relation").children("detail")[j];
+            tmp2 = (new XMLSerializer()).serializeToString(tmp2)
+			tmp2 = tmp2.replace("<detail>", "");
+            tmp2 = tmp2.replace("</detail>", "");
+            relations += tmp1[j]+"#&#"+tmp2+"#!#";
+            //alert(relations);
+		}
+		return relations;
+	}
 	if (name == 'x' || name == 'y'){
 		if (frame){
 			var framestamps = (obj.children("polygon").children("t").text()).split(',');
@@ -134,6 +148,10 @@ function LMsetObjectField(xml, ind_object, name, value){
 				obj.children("polygon").children("pt").eq(ii).children(name).text(value[ii]);
 			}			   	
 		}
+	}
+	if (name=='relation' && value !=''){
+        //var currentRelationNum = obj.children("relation").length;
+        obj.append(value);
 	}
 
 }

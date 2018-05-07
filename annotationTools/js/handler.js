@@ -53,7 +53,14 @@ function handler() {
     
     // Submits the object label in response to the edit/delete popup bubble.
     this.SubmitEditLabel = function () {
+        var relationLength = $("#relation_fields li").length;
+        var relationXML = '';
+        if(relationLength > 0){
+            for(i=0;i<relationLength;i++){
+                relationXML+= '<relation><hasrelation>'+$("#relation_fields li select")[i].value+'</hasrelation><detail>'+$("#relation_fields li input")[i].value+'</detail></relation>';
+            }
 
+        }
       if (scribble_canvas.scribblecanvas){
         scribble_canvas.annotationid = -1;
         scribble_canvas.cleanscribbles();
@@ -102,7 +109,11 @@ function handler() {
         
       
       LMsetObjectField(LM_xml, obj_ndx, "occluded", new_occluded);
-      
+      if(relationXML!=""){
+          LMsetObjectField(LM_xml, obj_ndx, "relation", relationXML);
+      }
+
+      //LM_xml = LM_xml.replace("</parts>", "</parts>");
       // Write XML to server:
       WriteXML(SubmitXmlUrl,LM_xml,function(){return;});
       
@@ -235,7 +246,14 @@ function handler() {
 	if (document.getElementById('occluded')) new_occluded = RemoveSpecialChars(document.getElementById('occluded').value);
 	else new_occluded = "";
       }
-      
+        var relationLength = $("#relation_fields li").length;
+        var relationXML = '';
+        if(relationLength > 0){
+            for(i=0;i<relationLength;i++){
+                relationXML+= '<relation><hasrelation>'+$("#relation_fields li select")[i].value+'</hasrelation><detail>'+$("#relation_fields li input")[i].value+'</detail></relation>';
+            }
+
+        }
       if((object_choices!='...') && (object_choices.length==1)) {
 	nn = RemoveSpecialChars(object_choices[0]);
 	  var re = /[a-zA-Z0-9]/;
@@ -288,12 +306,13 @@ function handler() {
 	html_str += '<attributes>' + new_attributes + '</attributes>';
       }
       html_str += '<parts><hasparts></hasparts><ispartof></ispartof></parts>';
+        html_str += relationXML;
       var ts = GetTimeStamp();
       if(ts.length==20) html_str += '<date>' + ts + '</date>';
       html_str += '<id>' + anno.anno_id + '</id>';
       if (bounding_box){
           html_str += '<type>'
-          html_str += 'bounding_box';
+          html_str += (ellipse_box ? 'ellipse_box' : 'bounding_box');
           html_str += '</type>'
         } 
       if(anno.GetType() == 1) {
@@ -362,9 +381,9 @@ function handler() {
       if (add_parts_to != null) addPart(add_parts_to, anno.anno_id);
       // Write XML to server:
       WriteXML(SubmitXmlUrl,LM_xml,function(){return;});
-      
+
       if(view_ObjList) RenderObjectList();
-      
+
       var m = main_media.GetFileInfo().GetMode();
       if(m=='mt') {
       	document.getElementById('object_name').value=new_name;
