@@ -157,7 +157,8 @@ function RenderObjectList() {
           if(tmpArray[j]!=""){
               tmpText = tmpArray[j].split("#&#");
               var ttt = tmpText[1].replace('<detail xmlns="http://www.w3.org/1999/xhtml">','');
-              html_str += '<li class="children_tree">is '+ttt+' (of) obj' + tmpText[0] +'</li>';
+              var objNum = parseInt(tmpText[0])+1;
+              html_str += '<li class="children_tree">is '+ttt+' (of) obj' + objNum +'</li>';
           }
         }
       }
