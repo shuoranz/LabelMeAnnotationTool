@@ -288,7 +288,7 @@ function GetPopupFormEdit(anno) {
 function addRelationField(aid){
     var Npolygons = LMnumberOfObjects(LM_xml);
     var relationInnerHtml = "";
-    relationInnerHtml += '<li>This Object is <input style="width:140px;" type="text"/> of <select name="relation_Obj">\n';
+    relationInnerHtml += '<li>This Object is <input list="browsers1" name="browser1" style="width:140px;"/><datalist id="browsers1"><option value="on the top"/><option value="on the bottom"/><option value="on the side"/><option value="on the left"/><option value="on the right"/><option value="in the front"/><option value="at the back"/></datalist> of <select name="relation_Obj">\n';
     if(aid){
       //edit
         for(var i=0; i < Npolygons; i++) {
